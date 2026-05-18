@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "908487857140",
+    "project_id": "desi-fit-musbabu",
+    "storage_bucket": "desi-fit-musbabu.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908487857140:android:c8ee69da0b1869976f1fa1",
+        "android_client_info": {
+          "package_name": "com.example.desi_fit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi8JNxg7m7B3u1YsgtkAEOBsqIY9YIVhw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
