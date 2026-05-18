@@ -8,7 +8,7 @@
 # 🍛 DesiFit
 ### *Your AI-Powered Desi Health Companion*
 
-> A cloud-based fitness and nutrition app built for the Pakistani lifestyle — track desi meals, get AI meal & workout plans, and stay hydrated. All powered by Google Firebase and Gemini 2.5 Flash.
+> A cloud-based fitness app built for the Pakistani lifestyle — track desi meals, get AI meal & workout plans, and stay hydrated. Powered by Google Firebase and Gemini 2.5 Flash.
 
 </div>
 
@@ -18,9 +18,9 @@
 
 Most fitness apps don't know what **Biryani** is. DesiFit does.
 
-DesiFit is a Flutter Android app designed specifically for Pakistani users. It combines a hand-curated database of **100+ desi foods**, an **AI meal and workout planner** (Gemini 2.5 Flash), and **real-time cloud sync** via Firebase — all on a free-tier backend.
+DesiFit is a Flutter Android app designed specifically for Pakistani users. It combines a hand-curated database of **100+ desi foods**, an **AI meal and workout planner** powered by Gemini 2.5 Flash, and real-time cloud sync via Firebase — all on a free-tier backend.
 
-Built as a Cloud Computing semester project at **Bahria University Karachi Campus**, Department of Software Engineering — Spring 2026.
+Built as a Cloud Computing semester project at **Bahria University Karachi Campus**, Department of Software Engineering — BSE 6A, Spring 2026.
 
 ---
 
@@ -28,16 +28,16 @@ Built as a Cloud Computing semester project at **Bahria University Karachi Campu
 
 | Feature | Description |
 |---|---|
-| 🍽️ **Desi Food Logging** | Search 100+ Pakistani foods by name with auto-populated calories |
-| 🤖 **AI Meal Planning** | Gemini-generated daily meal plan split across 5 desi meals |
+| 🍽️ **Desi Food Logging** | Search 100+ Pakistani foods with auto-populated calories per 100g |
+| 🤖 **AI Meal Planning** | Gemini-generated daily Pakistani meal plan split across 5 meals |
 | 🏋️ **AI Workout Planning** | Personalized workout routines based on your biometrics and goal |
 | 🔥 **Calorie Burn Tracker** | MET-based calculation for cardio and weightlifting sessions |
-| 💧 **Water Intake Tracker** | Weight-based daily glass target with real-time progress ring |
+| 💧 **Water Intake Tracker** | Weight-based daily glass target with real-time circular progress |
 | 📊 **Real-Time Dashboard** | Live calorie ring and per-meal progress via Firestore streams |
-| 📈 **Weekly Analytics** | Bar chart aggregating 7 days of meals, workouts, and water |
+| 📈 **Weekly Analytics** | Bar chart aggregating 7 days of meals, workouts, and hydration |
 | 🔐 **2FA Authentication** | Optional 6-digit OTP sent to your email via EmailJS |
 | 🌙 **Dark Mode** | Theme preference persisted to Firebase and restored on launch |
-| 👤 **Smart Onboarding** | BMR/TDEE calculated using Mifflin-St Jeor equation |
+| 👤 **Smart Onboarding** | BMR/TDEE calculated using the Mifflin-St Jeor equation |
 
 ---
 
@@ -47,7 +47,7 @@ Built as a Cloud Computing semester project at **Bahria University Karachi Campu
 Flutter App (Android)
        │
        ├── Firebase Authentication  ← login, 2FA session gating
-       ├── Cloud Firestore          ← all user data, AI plan cache, streams
+       ├── Cloud Firestore          ← all user data, AI plan cache, live streams
        ├── Firebase Storage         ← media assets
        │
        ├── Gemini 2.5 Flash API     ← AI meal & workout plans
@@ -55,7 +55,7 @@ Flutter App (Android)
        └── EmailJS API              ← 2FA OTP delivery
 ```
 
-**No custom backend server.** All logic runs in the Flutter client and communicates directly with managed cloud services.
+No custom backend server. All logic runs in the Flutter client and talks directly to managed cloud services.
 
 ---
 
@@ -70,8 +70,8 @@ lib/
     ├── onboarding/         # BMR/TDEE setup flow
     ├── dashboard/
     │   └── presentation/
-    │       ├── home_screen.dart             # Real-time calorie ring
-    │       ├── meal_logging_screen.dart     # Desi food search & log
+    │       ├── home_screen.dart              # Real-time calorie ring
+    │       ├── meal_logging_screen.dart      # Desi food search & log
     │       └── ai_recommendation_screen.dart # Gemini meal plans
     ├── workout/            # Workout tracker, AI plans, MET calculator
     ├── water/              # Water intake logger
@@ -82,33 +82,33 @@ lib/
 
 ---
 
-## ☁️ Cloud & Data Model
+## ☁️ Firestore Data Model
 
-All user data lives under `users/{uid}` in Firestore:
+All user data lives under `users/{uid}`:
 
 ```
 users/{uid}
 ├── dailyCalorieTarget, goal, weight, height, isDarkMode, is2FAEnabled ...
-├── meals/{id}              → name, calories, type, timestamp
-├── workouts/{id}           → type, name, duration, calories, timestamp
-├── water_logs/{YYYY-MM-DD} → glasses, timestamp
+├── meals/{id}                    → name, calories, type, timestamp
+├── workouts/{id}                 → type, name, duration, calories, timestamp
+├── water_logs/{YYYY-MM-DD}       → glasses, timestamp
 ├── ai_meal_plans/{YYYY-MM-DD}    → planText, createdAt
 └── ai_workout_plans/{YYYY-MM-DD} → planText, createdAt
 ```
 
-AI plans are **cached per day** — Gemini is only called once per date, then served from Firestore instantly.
+AI plans are **cached per day** — Gemini is called once per date, then served instantly from Firestore.
 
 ---
 
 ## 🧮 Core Formulas
 
-**BMR (Mifflin-St Jeor)**
+**BMR — Mifflin-St Jeor**
 ```
-Male:   BMR = (10 × weight) + (6.25 × height) − (5 × age) + 5
-Female: BMR = (10 × weight) + (6.25 × height) − (5 × age) − 161
+Male:   BMR = (10 × weight_kg) + (6.25 × height_cm) − (5 × age) + 5
+Female: BMR = (10 × weight_kg) + (6.25 × height_cm) − (5 × age) − 161
 ```
 
-**TDEE & Calorie Target**
+**TDEE & Daily Calorie Target**
 ```
 TDEE   = BMR × activityMultiplier
 Target = TDEE ± 400 kcal  (based on goal: loss / gain / maintain)
@@ -116,7 +116,7 @@ Target = TDEE ± 400 kcal  (based on goal: loss / gain / maintain)
 
 **Calorie Burn (MET-based)**
 ```
-Calories = MET × weight(kg) × duration(hours)
+Calories = MET × weight_kg × duration_hours
 ```
 
 ---
@@ -125,8 +125,8 @@ Calories = MET × weight(kg) × duration(hours)
 
 ### Prerequisites
 - Flutter 3.x
-- Android Studio or VS Code with Flutter extension
-- A Firebase project with Firestore, Auth, and Storage enabled
+- Android device or emulator
+- Firebase project with Firestore, Auth, and Storage enabled
 
 ### Setup
 
@@ -138,23 +138,24 @@ cd desi_fit
 # Install dependencies
 flutter pub get
 
-# Run on a connected Android device
+# Run on connected Android device
 flutter run
 ```
 
-> **Note:** You'll need your own `firebase_options.dart` and `google-services.json` with your Firebase project credentials. Replace the Gemini API key in `ai_recommendation_screen.dart` with your own from [Google AI Studio](https://aistudio.google.com).
+> ⚠️ You need your own `firebase_options.dart` and `google-services.json` from your Firebase project.  
+> ⚠️ Replace the Gemini API key in `ai_recommendation_screen.dart` with your key from [Google AI Studio](https://aistudio.google.com).
 
 ---
 
 ## 🧪 Testing Summary
 
-| Type | Tests | Passed |
+| Type | Tests | Result |
 |---|---|---|
-| Functional | 15 | 15 ✅ |
-| Integration | 7 | 7 ✅ |
-| Security | 6 | 6 ✅ |
-| Deployment | 5 | 5 ✅ |
-| UAT Tasks | 7 | 7 ✅ |
+| Functional | 15 | ✅ All Pass |
+| Integration | 7 | ✅ All Pass |
+| Security | 6 | ✅ All Pass |
+| Deployment | 5 | ✅ All Pass |
+| User Acceptance | 7 tasks | ✅ All Pass |
 
 ---
 
@@ -162,26 +163,24 @@ flutter run
 
 | Name | Role |
 |---|---|
-| **Usman Hameed** | Team Lead — Data Storage, Food DB, Workout & Water Modules |
-| **Mustafa Zaman Khan** | Cloud Backend, Gemini AI Integration, Firestore Caching |
-| **Fahad Bin Nasir** | UI/UX Design, Dashboard, Meal Logging, Splash Screen |
-| **Qudama Ahmed Khan** | Auth, 2FA, Onboarding, Analytics, Dark Mode |
+| **Usman Hameed** | Team Lead — Data storage, Food DB, Workout & Water modules |
+| **Mustafa Zaman Khan** | Cloud backend, Gemini AI integration, Firestore caching |
+| **Fahad Bin Nasir** | UI/UX design, Dashboard, Meal logging, Splash screen |
+| **Qudama Ahmed Khan** | Auth, 2FA, Onboarding, Weekly analytics, Dark mode |
 
-**Course:** CSL 220 Cloud Computing — BSE 6A, Spring 2026  
-**Bahria University Karachi Campus, Department of Software Engineering**
+**Course:** CSL 220 Cloud Computing | Bahria University Karachi Campus, Spring 2026
 
 ---
 
 ## 🔮 Future Work
 
-- [ ] Firebase Cloud Functions backend proxy (secure API keys)
+- [ ] Firebase Cloud Functions proxy for secure API key management
 - [ ] Server-side 2FA OTP validation
 - [ ] Firebase Cloud Messaging for water reminders
-- [ ] iOS build target
 - [ ] Barcode scanner for packaged foods
 - [ ] Protein / carbs / fats breakdown per meal
 - [ ] Streak tracking and gamification
-- [ ] Formal Firestore security audit
+- [ ] Formal Firestore security rules audit
 
 ---
 
@@ -196,7 +195,5 @@ flutter run
 ---
 
 <div align="center">
-
 Made with 🍛 in Karachi
-
 </div>
